@@ -1,4 +1,10 @@
+* 参考README, 启动nacos-server.
+ 
+* 启动脚本需要JAVA_HOME环境变量，我使用了jenv管理jdk, 会屏蔽掉环境变量 JAVA_HOME, 在启动nacos-server前，需要执行jenv_set_java_home
+* 
 
+* http://localhost:8848/nacos   nacos/nacos
+ 
 <img src="doc/Nacos_Logo.png" width="50%" syt height="50%" />
 
 # Nacos: Dynamic  *Na*ming and *Co*nfiguration *S*ervice

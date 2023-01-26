@@ -65,10 +65,12 @@ public class NacosConfigService implements ConfigService {
     /**
      * long polling.
      */
+    /** 构造方法中初始化. */
     private final ClientWorker worker;
     
     private String namespace;
-    
+
+    /** 构造方法中初始化. */
     private final ConfigFilterChainManager configFilterChainManager;
     
     public NacosConfigService(Properties properties) throws NacosException {

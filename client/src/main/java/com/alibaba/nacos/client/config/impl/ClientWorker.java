@@ -92,6 +92,10 @@ import static com.alibaba.nacos.api.common.Constants.ENCODE;
  *
  * @author Nacos
  */
+
+/**
+ * rpcClient: 没有作为ClientWorker的属性，而是用到的时候使用RpcClientFactory来获取，在RpcClientFactory中使用了CLIENT_MAP缓存rpcClient.
+ */
 public class ClientWorker implements Closeable {
     
     private static final Logger LOGGER = LogUtils.logger(ClientWorker.class);
@@ -116,11 +120,13 @@ public class ClientWorker implements Closeable {
     private final ConfigFilterChainManager configFilterChainManager;
     
     private boolean isHealthServer = true;
-    
+
+    /** worker 标识, 作为 RpcClientFactory.CLIENT_MAP 缓存的key */
     private String uuid = UUID.randomUUID().toString();
     
     private long timeout;
-    
+
+    /** 构造方法中初始化. */
     private ConfigTransportClient agent;
     
     private int taskPenaltyTime;

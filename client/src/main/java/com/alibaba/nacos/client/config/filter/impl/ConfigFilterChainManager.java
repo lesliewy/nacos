@@ -37,6 +37,7 @@ public class ConfigFilterChainManager implements IConfigFilterChain {
     private final List<IConfigFilter> filters = new ArrayList<>();
     
     public ConfigFilterChainManager(Properties properties) {
+        /** 扩展点. JDK的 SPI. META-INF/目录下 */
         ServiceLoader<IConfigFilter> configFilters = ServiceLoader.load(IConfigFilter.class);
         for (IConfigFilter configFilter : configFilters) {
             configFilter.init(properties);

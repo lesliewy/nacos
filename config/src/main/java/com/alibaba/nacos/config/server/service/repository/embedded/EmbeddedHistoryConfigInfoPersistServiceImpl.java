@@ -109,6 +109,7 @@ public class EmbeddedHistoryConfigInfoPersistServiceImpl implements HistoryConfi
         
         HistoryConfigInfoMapper historyConfigInfoMapper = mapperManager.findMapper(
                 dataSourceService.getDataSourceType(), TableConstant.HIS_CONFIG_INFO);
+        /** INSERT INTO his_config_info(id, data_id, group_id, tenant_id, app_name, content, md5, src_ip, src_user, gmt_modified, op_type, encrypted_data_key) VALUES(?,?,?,?,?,?,?,?,?,?,?,?) */
         final String sql = historyConfigInfoMapper.insert(
                 Arrays.asList("id", "data_id", "group_id", "tenant_id", "app_name", "content", "md5", "src_ip",
                         "src_user", "gmt_modified", "op_type", "encrypted_data_key"));

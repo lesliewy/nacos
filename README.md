@@ -1,10 +1,19 @@
-* 参考README, 启动nacos-server.
+* 参考 https://nacos.io/zh-cn/docs/quick-start.html , 直接从源码方式mvn, 然后启动nacos-server.
+  maven执行之前，先修改nacos-all模块的pom.xml, 去掉plugin pmd 和 checkstyle. 因为我加的注释可能不符合他们的要求.
  
 * 启动脚本需要JAVA_HOME环境变量，我使用了jenv管理jdk, 会屏蔽掉环境变量 JAVA_HOME, 在启动nacos-server前，需要执行jenv_set_java_home
-* 
 
 * http://localhost:8848/nacos   nacos/nacos
- 
+
+* 远程调试:
+  1, distribution/bin/startup.sh:
+  JAVA_OPT=" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 ${JAVA_OPT} "
+  2, cd nacos;
+  mvn clean;
+  mvn -Prelease-nacos -Dmaven.test.skip=true clean install -U
+  3, 参照文档启动即可.
+
+
 <img src="doc/Nacos_Logo.png" width="50%" syt height="50%" />
 
 # Nacos: Dynamic  *Na*ming and *Co*nfiguration *S*ervice

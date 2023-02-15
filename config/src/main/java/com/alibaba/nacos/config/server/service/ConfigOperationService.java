@@ -94,6 +94,7 @@ public class ConfigOperationService {
         
         if (StringUtils.isBlank(configRequestInfo.getBetaIps())) {
             if (StringUtils.isBlank(configForm.getTag())) {
+                /** 默认进入EmbeddedConfigInfoPersistServiceImpl. */
                 configInfoPersistService.insertOrUpdate(configRequestInfo.getSrcIp(), configForm.getSrcUser(),
                         configInfo, time, configAdvanceInfo, false);
                 ConfigChangePublisher.notifyConfigChange(

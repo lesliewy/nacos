@@ -160,6 +160,7 @@ public abstract class GrpcClient extends RpcClient {
      * @return if server check success,return a non-null channel.
      */
     private ManagedChannel createNewManagedChannel(String serverIp, int serverPort) {
+        /** 这里的keepAliveTime应该就是grpc的长轮询机制，默认6分钟. */
         ManagedChannelBuilder<?> managedChannelBuilder = ManagedChannelBuilder.forAddress(serverIp, serverPort)
                 .executor(grpcExecutor).compressorRegistry(CompressorRegistry.getDefaultInstance())
                 .decompressorRegistry(DecompressorRegistry.getDefaultInstance())
@@ -299,7 +300,9 @@ public abstract class GrpcClient extends RpcClient {
             if (grpcExecutor == null) {
                 this.grpcExecutor = createGrpcExecutor(serverInfo.getServerIp());
             }
+            /** grpc端口默认在nacos的端口上加1000, 即9848*/
             int port = serverInfo.getServerPort() + rpcPortOffset();
+            /** grpc channel， 设置了keepAliveTime 维持长轮询. */
             ManagedChannel managedChannel = createNewManagedChannel(serverInfo.getServerIp(), port);
             RequestGrpc.RequestFutureStub newChannelStubTemp = createNewChannelStub(managedChannel);
             if (newChannelStubTemp != null) {

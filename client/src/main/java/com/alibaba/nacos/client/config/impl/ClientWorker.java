@@ -113,7 +113,7 @@ public class ClientWorker implements Closeable {
     private static final String ENCRYPTED_DATA_KEY_PARAM = "encryptedDataKey";
     
     /**
-     * groupKey -> cacheData.
+     * groupKey(dataId + group) -> cacheData.
      */
     private final AtomicReference<Map<String, CacheData>> cacheMap = new AtomicReference<>(new HashMap<>());
     
@@ -171,6 +171,7 @@ public class ClientWorker implements Closeable {
             throws NacosException {
         group = blank2defaultGroup(group);
         String tenant = agent.getTenant();
+        /** 会将cacheData添加到cacheMap中. start()中获取执行. */
         CacheData cache = addCacheDataIfAbsent(dataId, group, tenant);
         synchronized (cache) {
             for (Listener listener : listeners) {
@@ -448,6 +449,7 @@ public class ClientWorker implements Closeable {
             ConfigResponse response = getServerConfig(cacheData.dataId, cacheData.group, cacheData.tenant, 3000L,
                     notify);
             cacheData.setEncryptedDataKey(response.getEncryptedDataKey());
+            /** 设置content,同时也会设置content的md5.*/
             cacheData.setContent(response.getContent());
             if (null != response.getConfigType()) {
                 cacheData.setType(response.getConfigType());
@@ -457,6 +459,7 @@ public class ClientWorker implements Closeable {
                         agent.getName(), cacheData.dataId, cacheData.group, cacheData.tenant, cacheData.getMd5(),
                         ContentUtils.truncateContent(response.getContent()), response.getConfigType());
             }
+            /** 通知listeners.*/
             cacheData.checkListenerMd5();
         } catch (Exception e) {
             LOGGER.error("refresh content and check md5 fail ,dataId={},group={},tenant={} ", cacheData.dataId,
@@ -733,6 +736,7 @@ public class ClientWorker implements Closeable {
             Map<String, List<CacheData>> removeListenCachesMap = new HashMap<>(16);
             long now = System.currentTimeMillis();
             boolean needAllSync = now - lastAllSyncTime >= ALL_SYNC_INTERNAL;
+            /** configService.addListeners()时cacheMap.put()*/
             for (CacheData cache : cacheMap.get().values()) {
                 
                 synchronized (cache) {

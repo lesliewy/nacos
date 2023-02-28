@@ -81,7 +81,8 @@ public class CacheData {
     public final String tenant;
     
     private final CopyOnWriteArrayList<ManagerListenerWrap> listeners;
-    
+
+    /** 本次content的md5. */
     private volatile String md5;
     
     /**
@@ -331,6 +332,7 @@ public class CacheData {
                 configFilterChainManager.doFilter(null, cr);
                 String contentTmp = cr.getContent();
                 listenerWrap.inNotifying = true;
+                /** 调用用户接口. */
                 listener.receiveConfigInfo(contentTmp);
                 // compare lastContent and content
                 if (listener instanceof AbstractConfigChangeListener) {
@@ -340,7 +342,8 @@ public class CacheData {
                     ((AbstractConfigChangeListener) listener).receiveConfigChange(event);
                     listenerWrap.lastContent = contentTmp;
                 }
-                
+
+                /** 记录本次的md5, 用于下次比较. */
                 listenerWrap.lastCallMd5 = md5;
                 LOGGER.info("[{}] [notify-ok] dataId={}, group={}, md5={}, listener={} ,cost={} millis.", name, dataId,
                         group, md5, listener, (System.currentTimeMillis() - start));
@@ -359,6 +362,7 @@ public class CacheData {
         final long startNotify = System.currentTimeMillis();
         try {
             if (null != listener.getExecutor()) {
+                /** 异步执行: 通知listener.*/
                 listener.getExecutor().execute(job);
             } else {
                 try {
@@ -464,7 +468,8 @@ public class CacheData {
         boolean inNotifying = false;
         
         final Listener listener;
-        
+
+        /** 上一次content的md5, 会和当前的进行比较，只有不同时才会通知listener.*/
         String lastCallMd5 = Constants.NULL;
         
         /**

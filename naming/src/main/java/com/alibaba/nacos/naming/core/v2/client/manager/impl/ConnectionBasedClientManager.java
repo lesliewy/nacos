@@ -132,6 +132,7 @@ public class ConnectionBasedClientManager extends ClientConnectionEventListener 
         if (null != client) {
             // remote node of old version will always verify with zero revision
             if (0 == verifyData.getRevision() || client.getRevision() == verifyData.getRevision()) {
+                /** 更新心跳时间. */
                 client.setLastRenewTime();
                 return true;
             } else {
@@ -155,6 +156,7 @@ public class ConnectionBasedClientManager extends ClientConnectionEventListener 
             long currentTime = System.currentTimeMillis();
             for (String each : clientManager.allClientId()) {
                 ConnectionBasedClient client = (ConnectionBasedClient) clientManager.getClient(each);
+                /** 心跳超时，发布断开连接事件. */
                 if (null != client && client.isExpire(currentTime)) {
                     clientManager.clientDisconnected(each);
                 }

@@ -126,11 +126,14 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
     public void subscribeService(Service service, Subscriber subscriber, String clientId) {
         Service singleton = ServiceManager.getInstance().getSingletonIfExist(service).orElse(service);
         Client client = clientManager.getClient(clientId);
+        /** 校验长连接是否正常 */
         if (!clientIsLegal(client, clientId)) {
             return;
         }
+        /** 保存订阅数据 */
         client.addServiceSubscriber(singleton, subscriber);
         client.setLastUpdatedTime();
+        /** 发送订阅事件 */
         NotifyCenter.publishEvent(new ClientOperationEvent.ClientSubscribeServiceEvent(singleton, clientId));
     }
     

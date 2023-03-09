@@ -13,6 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * 心跳机制: ConnectionBasedClientManager
+ * 客户端订阅: EphemeralClientOperationServiceImpl#subscribeService()
+ *           ClientServiceIndexesManager#onEvent()
+ * 服务端推送: PushDelayTaskProcessor, PushExecuteTask, InnerWorker
+ * 查询服务实例: NacosNamingService.getAllInstances()  磁盘 -> 内存 -> 服务端
+ *
+ */
 
 package com.alibaba.nacos.client.naming;
 
@@ -244,12 +252,16 @@ public class NacosNamingService implements NamingService {
             boolean subscribe) throws NacosException {
         ServiceInfo serviceInfo;
         String clusterString = StringUtils.join(clusters, ",");
+        /** 这里默认传过来是true */
         if (subscribe) {
+            /** 从本地内存获取服务数据，如果获取不到则从磁盘获取 */
             serviceInfo = serviceInfoHolder.getServiceInfo(serviceName, groupName, clusterString);
             if (null == serviceInfo || !clientProxy.isSubscribed(serviceName, groupName, clusterString)) {
+                /** 如果从本地获取不到数据，则调用订阅方法 */
                 serviceInfo = clientProxy.subscribe(serviceName, groupName, clusterString);
             }
         } else {
+            /** 适用于不走订阅，直接从服务端获取数据的情况 */
             serviceInfo = clientProxy.queryInstancesOfService(serviceName, groupName, clusterString, 0, false);
         }
         List<Instance> list;

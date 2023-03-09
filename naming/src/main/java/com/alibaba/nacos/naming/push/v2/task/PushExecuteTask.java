@@ -70,6 +70,7 @@ public class PushExecuteTask extends AbstractExecuteTask {
             }
         } catch (Exception e) {
             Loggers.PUSH.error("Push task for service" + service.getGroupedServiceName() + " execute failed ", e);
+            /** 当推送发生异常，重新将推送任务放入执行队列 */
             delayTaskEngine.addTask(service, new PushDelayTask(service, 1000L));
         }
     }
@@ -81,6 +82,10 @@ public class PushExecuteTask extends AbstractExecuteTask {
     }
     
     private Collection<String> getTargetClientIds() {
+        /**
+         * 如果是服务上下线导致的推送，获取所有订阅者
+         * 如果是订阅导致的推送，获取订阅者
+         */
         return delayTask.isPushToAll() ? delayTaskEngine.getIndexesManager().getAllClientsSubscribeService(service)
                 : delayTask.getTargetClients();
     }
